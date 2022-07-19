@@ -131,7 +131,7 @@ jobs:
             npm install
             npm audit fix --audit-level=critical --force
 
-  deploy_backend_infrastructure:
+  deploy_infrastructure:
     docker:
       - image: amazon/aws-cli
     steps:
@@ -145,6 +145,15 @@ jobs:
               --stack-name udapeople-backend-prod-$CIRCLE_WORKFLOW_ID:0:7} \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}" \
               --tags project=udapeople-backend  \
+
+      - run:
+          name: ensure frontend infrastructure exists
+          command: |
+            aws cloudformation deploy \
+             --template-file .circleci/files/frontend.yml \
+             --stack-name udapeople-frontend-prod-${CIRCLE_WORKFLOW_ID:0:7} \
+             --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  \
+             --tags project=udapeople-frontend \
 
       - run:
           name: Add back-end ip to ansible inventory
@@ -164,24 +173,6 @@ jobs:
           paths:
             - project/.circleci/ansible/inventory.txt
             - project/.circleci/ansible/inventory.txt
-      # Here's where you will add some code to rollback on failure
-      - destroy_environment:
-          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
-
-  deploy_frontend_infrastructure:
-    docker:
-      - image: amazon/aws-cli
-    steps:
-      - checkout
-      - run:
-          name: Ensure front-end infrastructure exist
-          command: |
-            aws cloudformation deploy \
-              --template-file .circleci/files/frontend.yml \
-              --stack-name udapeople-frontend-prod-${CIRCLE_WORKFLOW_ID:0:7} \
-              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  \
-              --tags project=udapeople-frontend \
-
       # Here's where you will add some code to rollback on failure
       - destroy_environment:
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
@@ -337,19 +328,15 @@ workflows:
           requires: [build-backend]
       - scan-frontend:
           requires: [build-frontend]
-      - deploy_backend_infrastructure:
-          requires: [test-backend, scan-backend]
+      - deploy_infrastructure:
+          requires: [test-backend, scan-backend, test-frontend, scan-frontend]
           filters:
             branches:
               only: [master]
-      - deploy_frontend_infrastructure:
-          requires: [test-frontend, scan-frontend]
-          filters:
-            branches:
-              only: [master]
+
       # - configure-infrastructure:
       #     requires:
-      #       [deploy_backend_infrastructure, deploy_frontend_infrastructure]
+      #       [deploy__infrastructure]
       # - run-migrations:
       #     requires: [configure-infrastructure]
       # - deploy-frontend:
