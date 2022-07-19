@@ -144,7 +144,7 @@ jobs:
               --template-file .circleci/files/backend.yml \
               --stack-name udapeople-backend-prod-$CIRCLE_WORKFLOW_ID:0:7} \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}" \
-              --tags project=udapeople-backend
+              --tags project=udapeople-backend  \
 
       - run:
           name: Add back-end ip to ansible inventory
@@ -347,9 +347,9 @@ workflows:
           filters:
             branches:
               only: [master]
-      - configure-infrastructure:
-          requires:
-            [deploy_backend_infrastructure, deploy_frontend_infrastructure]
+      # - configure-infrastructure:
+      #     requires:
+      #       [deploy_backend_infrastructure, deploy_frontend_infrastructure]
       # - run-migrations:
       #     requires: [configure-infrastructure]
       # - deploy-frontend:
