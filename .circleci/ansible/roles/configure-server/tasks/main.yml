@@ -1,0 +1,25 @@
+---
+- name: "installing npm"
+  become: true
+  apt:
+    name: npm
+    update_cache: yes
+    state: latest
+
+- name: Install nvm
+  become: true
+  npm:
+    name: n
+    global: yes
+
+- name: install nodejs v13.8.0
+  become: true
+  command: n 13.8.0
+
+- name: "installing pm2"
+  become: true
+  npm:
+    name: pm2
+    global: yes
+    production: yes
+    state: present

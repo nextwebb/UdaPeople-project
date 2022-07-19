@@ -142,16 +142,18 @@ jobs:
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
-              --stack-name udapeople-backend-prod-${CIRCLE_WORKFLOW_ID:0:7} \
-              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  \
               --tags project=udapeople-backend \
+              --stack-name backend-${CIRCLE_WORKFLOW_ID} \
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID}"
+
       - run:
           name: Add back-end ip to ansible inventory
           command: |
             BACKEND_AWS_PUBLIC_IP=$(aws ec2 describe-instances \
-               --filters "Name=tag:Name,Values=backend-prod-${CIRCLE_WORKFLOW_ID:0:7}" \
+               --filters "Name=tag:Name,Values=udapeople-backend-${CIRCLE_WORKFLOW_ID}" \
                --query 'Reservations[*].Instances[*].PublicIpAddress' \
                --output text)
+
             echo "http://$BACKEND_AWS_PUBLIC_IP:3030" >> .circleci/outputs/backend_url.txt
             echo "[all]" >> .circleci/ansible/inventory.txt
             echo "$BACKEND_AWS_PUBLIC_IP" >> .circleci/ansible/inventory.txt
@@ -164,7 +166,7 @@ jobs:
             - project/.circleci/ansible/inventory.txt
       # Here's where you will add some code to rollback on failure
       - destroy_environment:
-          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
+          workflow_id: "${CIRCLE_WORKFLOW_ID}"
 
   deploy_frontend_infrastructure:
     docker:
@@ -176,31 +178,39 @@ jobs:
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/frontend.yml \
-              --stack-name udapeople-frontend-prod-${CIRCLE_WORKFLOW_ID:0:7} \
-              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  \
               --tags project=udapeople-frontend \
+              --stack-name frontend-${CIRCLE_WORKFLOW_ID} \
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID}"  \
+
       # Here's where you will add some code to rollback on failure
       - destroy_environment:
-          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
+          workflow_id: "${CIRCLE_WORKFLOW_ID}"
 
-  # configure-infrastructure:
-  #   docker:
-  #     # Docker image here that supports Ansible
-  #   steps:
-  #     # Checkout code from git
-  #     # Add ssh keys with fingerprint
-  #     # attach workspace
-  #     - run:
-  #         name: Install dependencies
-  #         command: |
-  #           # Your code here
-  #           exit 1
-  #     - run:
-  #         name: Configure server
-  #         command: |
-  #           # Your code here
-  #           exit 1
-  #     # Here's where you will add some code to rollback on failure
+  configure-infrastructure:
+    docker:
+      - image: python:3.7-alpine3.12
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "3c:84:e7:bc:cf:56:81:62:c8:fc:26:22:14:5a:c7:be:71:27:97:48"
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update curl nodejs npm ansible zip
+            pip install awscli
+      - run:
+          name: Configure server
+          command: |
+            apk add --update ansible aws-cli
+      - run:
+          name: Configure server
+          command: |
+            ansible-playbook -i inventory.txt configure-server.yml
+      - destroy-environment:
+          workflow_id: "${CIRCLE_WORKFLOW_ID}"
 
   # run-migrations:
   #   docker:
@@ -332,13 +342,14 @@ workflows:
           filters:
             branches:
               only: [master]
-      - deploy_frontend_infrastructure:
+      - deploy_backend_infrastructure:
           requires: [test-frontend, scan-frontend]
           filters:
             branches:
               only: [master]
-      # - configure-infrastructure:
-      #     requires: [deploy-infrastructure]
+      - configure-infrastructure:
+          requires:
+            [deploy_backend_infrastructure, deploy_backend_infrastructure]
       # - run-migrations:
       #     requires: [configure-infrastructure]
       # - deploy-frontend:
