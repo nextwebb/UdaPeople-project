@@ -143,7 +143,7 @@ jobs:
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
               --tags project=udapeople-backend \
-              --stack-name backend-${CIRCLE_WORKFLOW_ID} \
+              --stack-name udapeople-backend-prod-${CIRCLE_WORKFLOW_ID} \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID}"
 
       - run:
@@ -179,7 +179,7 @@ jobs:
             aws cloudformation deploy \
               --template-file .circleci/files/frontend.yml \
               --tags project=udapeople-frontend \
-              --stack-name frontend-${CIRCLE_WORKFLOW_ID} \
+              --stack-name udapeople-frontend-prod-${CIRCLE_WORKFLOW_ID} \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID}"  \
 
       # Here's where you will add some code to rollback on failure
