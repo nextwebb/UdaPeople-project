@@ -288,6 +288,7 @@ jobs:
             cd ..
             # Zip the directory
             tar -C backend -czvf artifact.tar.gz .
+
             mkdir -p ~/project/.circleci/ansible/roles/deploy/files/
             mv backend/ ~/project/.circleci/ansible/roles/deploy/files/
             mv artifact.tar.gz ~/project/.circleci/ansible/roles/deploy/files/artifact.tar.gz
