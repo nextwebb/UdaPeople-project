@@ -34,8 +34,6 @@ commands:
              fi
 
 jobs:
-  #creating builds for both frontend and backend
-
   build-frontend:
     docker:
       - image: circleci/node:13.8.0
@@ -135,7 +133,6 @@ jobs:
             npm install
             npm audit fix --audit-level=critical --force
 
-  #job for deploying_infrastructure
   deploy-infrastructure:
     docker:
       - image: amazon/aws-cli
@@ -176,7 +173,6 @@ jobs:
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
-  #jobs firing ansible roles into configuring infrastructure
   configure-infrastructure:
     docker:
       - image: python:3.7-alpine3.11
@@ -199,8 +195,7 @@ jobs:
             ansible-playbook -i inventory.txt configure-server.yml
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
-  #######################################################################
-  ## run database migrations
+
   run-migrations:
     docker:
       - image: circleci/node:13.8.0
@@ -260,7 +255,7 @@ jobs:
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
-  #deploying backend
+
   deploy-backend:
     docker:
       - image: python:3.7-alpine3.11
