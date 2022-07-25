@@ -185,7 +185,7 @@ jobs:
       - checkout
       - add_ssh_keys:
           fingerprints:
-            - "3c:84:e7:bc:cf:56:81:62:c8:fc:26:22:14:5a:c7:be:71:27:97:48"
+            ["3c:84:e7:bc:cf:56:81:62:c8:fc:26:22:14:5a:c7:be:71:27:97:48"]
       - attach_workspace:
           at: ~/
       - run:
@@ -274,7 +274,7 @@ jobs:
           keys: [build-backend]
       - add_ssh_keys:
           fingerprints:
-            - "3c:84:e7:bc:cf:56:81:62:c8:fc:26:22:14:5a:c7:be:71:27:97:48"
+            ["3c:84:e7:bc:cf:56:81:62:c8:fc:26:22:14:5a:c7:be:71:27:97:48"]
       - attach_workspace:
           at: ~/
       - run:
@@ -295,6 +295,9 @@ jobs:
             cd ..
 
             tar -C backend -czvf artifact.tar.gz .
+            mkdir -p ~/project/.circleci/ansible/roles/deploy/files/
+            mv backend/ ~/project/.circleci/ansible/roles/deploy/files/
+            mv artifact.tar.gz ~/project/.circleci/ansible/roles/deploy/files/artifact.tar.gz
             cd .circleci/ansible
             echo "Contents  of the inventory.txt file is -------"
             cat inventory.txt
