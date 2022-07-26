@@ -364,7 +364,6 @@ jobs:
             curl -k https://kvdb.io/${KVDB_ID}/old_workflow_id -d "${OLD_WORKFLOW_ID}"
 
       - run:
-      
           name: Update cloudfront distribution
           command: |
             aws cloudformation deploy \
