@@ -356,11 +356,12 @@ jobs:
       - run:
           name: Getting the old workflow id and saving to kvdb.io
           command: |
-            WorkflowID=$(aws cloudformation \
+
+            export OLD_WORKFLOW_ID=$(aws cloudformation \
             list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
             --no-paginate --output text)
-            echo "Old Worflow ID": $WorkflowID
-            curl https://kvdb.io/${KVDB_ID}/WorkflowID -d "${WorkflowID}"
+            echo "old workflow ID is: $OLD_WORKFLOW_ID"
+            curl -k https://kvdb.io/${KVDB_ID}/old_workflow_id -d "${OLD_WORKFLOW_ID}"
 
       - run:
           name: Update cloudfront distribution
@@ -386,12 +387,14 @@ jobs:
       - run:
           name: Fetch OldStack Workflow ID
           command: |
-            export OldWorkflowID=$(aws cloudformation list-exports --query "Exports[?Name==\`WorkflowID\`].Value" --no-paginate --output text)
-            echo OldWorkflowID: "${OldWorkflowID}"
-            echo CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID:0:7}"
 
-            export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
+            export STACKS=($(aws cloudformation list-stacks \
+                --query "StackSummaries[*].StackName" \
+                --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
             echo Stack names: "${STACKS[@]}"
+            export OldWorkflowID=$(curl --insecure https://kvdb.io/${KVDB_ID}/old_workflow_id) 
+            echo "$OldWorkflowID"
+
 
             if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
             then
