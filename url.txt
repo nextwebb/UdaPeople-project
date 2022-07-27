@@ -1,2 +1,0 @@
-URL01 - https://github.com/nextwebb/UdaPeople-project
-URL02 - http://udapeople-3466d7e.s3-website-us-east-1.amazonaws.com/#/employees
