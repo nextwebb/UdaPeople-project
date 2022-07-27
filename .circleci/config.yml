@@ -396,21 +396,21 @@ jobs:
             echo "$OldWorkflowID"
 
 
-            # if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
-            # then
-            #   echo "Delete Blue Deployment"
-            #   aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
-            #   aws cloudformation delete-stack --stack-name "udapeople-backend-prod-${OldWorkflowID}"
-            #   aws cloudformation delete-stack --stack-name "udapeople-frontend-prod-${OldWorkflowID}"
-            # else
-            #   echo "No blue deployment available"
-            # fi
-            for i in  ${STACKS[@]}
-            do
-              echo "$i"
-                  aws cloudformation  wait stack-delete-complete --stack-name "$i"
-                  aws cloudformation  wait stack-delete-complete --stack-name "$i"
-            done
+            if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
+            then
+              echo "Delete Blue Deployment"
+              aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
+              aws cloudformation delete-stack --stack-name "udapeople-backend-prod-${OldWorkflowID}"
+              aws cloudformation delete-stack --stack-name "udapeople-frontend-prod-${OldWorkflowID}"
+            else
+              echo "No blue deployment available"
+            fi
+            # for i in  ${STACKS[@]}
+            # do
+            #   echo "$i"
+            #       aws cloudformation delete-stack --stack-name "$i"
+            #       aws cloudformation delete-stack --stack-name "$i"
+            # done
 
 workflows:
   default_workflow:
