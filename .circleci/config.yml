@@ -408,8 +408,8 @@ jobs:
             for i in  ${STACKS[@]}
             do
               echo "$i"
-                  aws cloudformation delete-stack --stack-name "$i"
-                  aws cloudformation delete-stack --stack-name "$i"
+                  aws cloudformation  wait stack-delete-complete --stack-name "$i"
+                  aws cloudformation  wait stack-delete-complete --stack-name "$i"
             done
 
 workflows:
