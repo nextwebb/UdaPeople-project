@@ -35,10 +35,9 @@ Resources:
       Tags:
         - Key: Name
           Value: !Sub backend-${ID}
-
-Outputs:
-  WorkflowID:
-    Value: !Sub ${ID}
-    Description: CI workflow ID
-    Export:
-      Name: WorkflowID
+# Outputs:
+#   WorkflowID:
+#     Value: !Sub ${ID}
+#     Description: CI workflow ID
+#     Export:
+#       Name: WorkflowID
