@@ -1,0 +1,2 @@
+URL01 = https://github.com/nextwebb/UdaPeople-project
+url02 = http://udapeople-7712c0b.s3-website-us-east-1.amazonaws.com/#/employees
