@@ -1,2 +1,12 @@
 URL01 = https://github.com/nextwebb/UdaPeople-project
 url02 = http://udapeople-7712c0b.s3-website-us-east-1.amazonaws.com/#/employees
+
+
+Cloudfront distribution: 
+http://d1i0kdk8z6hvug.cloudfront.net/#/employees
+
+Prometheus monitoring: 
+http://ec2-54-147-141-166.compute-1.amazonaws.com:9090/targets
+
+Alert Manager: 
+http://ec2-54-147-141-166.compute-1.amazonaws.com:9093/#/alerts
